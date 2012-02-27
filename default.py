@@ -61,8 +61,6 @@ class SwitchKing:
 			if(devicegroup.getElementsByTagName("ID")[0].childNodes[0].data == "-1"):
 				continue
 
-			print devicegroup.toprettyxml()
-
 			result.append({
 				"name": self.utils.unescape(devicegroup.getElementsByTagName("Name")[0].childNodes[0].data).encode('utf-8'),
 				"id": int(devicegroup.getElementsByTagName("ID")[0].childNodes[0].data)
