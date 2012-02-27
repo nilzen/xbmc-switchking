@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <string id="30000">Devices</string>
+    <string id="30001">Device groups</string>
+    <string id="30002">Scenarios</string>
+
+    <string id="30010">On</string>
+    <string id="30011">Off</string>
+    <string id="30012">By schedule</string>
+    
+    <string id="30030">Choose Scenario</string>
+
+    <string id="30050">Dim 10%</string>
+    <string id="30051">Dim 20%</string>
+    <string id="30052">Dim 30%</string>
+    <string id="30053">Dim 40%</string>
+    <string id="30054">Dim 50%</string>
+    <string id="30055">Dim 60%</string>
+    <string id="30056">Dim 70%</string>
+    <string id="30057">Dim 80%</string>
+    <string id="30058">Dim 90%</string>
+
+    <string id="30500">Host</string>
+    <string id="30501">Port</string>
+    <string id="30502">Username</string>
+    <string id="30503">Password</string>
+</strings>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+    <setting id="host" type="ipaddress" label="30500" default="127.0.0.1" />
+    <setting id="port" type="text" label="30501" default="8800" />
+    <setting id="username" type="text" label="30502" />
+    <setting id="password" type="text" label="30503" />
+</settings>

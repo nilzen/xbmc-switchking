@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <string id="30000">Enheter</string>
+    <string id="30001">Enhetsgrupper</string>
+    <string id="30002">Scenarion</string>
+
+    <string id="30010">På</string>
+    <string id="30011">Av</string>
+    <string id="30012">Enligt schema</string>
+
+    <string id="30030">Välj scenario</string>
+
+    <string id="30050">Dimma 10%</string>
+    <string id="30051">Dimma 20%</string>
+    <string id="30052">Dimma 30%</string>
+    <string id="30053">Dimma 40%</string>
+    <string id="30054">Dimma 50%</string>
+    <string id="30055">Dimma 60%</string>
+    <string id="30056">Dimma 70%</string>
+    <string id="30057">Dimma 80%</string>
+    <string id="30058">Dimma 90%</string>
+
+	<string id="30500">Adress</string>
+	<string id="30501">Port</string>
+	<string id="30502">Användarnamn</string>
+	<string id="30503">Lösenord</string>
+</strings>
