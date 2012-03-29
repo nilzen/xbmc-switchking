@@ -1,12 +1,11 @@
 import xbmc, xbmcplugin, xbmcaddon, xbmcgui
+import urllib
+import resources.lib.switchking as SwitchKing
+import resources.lib.utils as Utils
 
-import re, htmlentitydefs
-import httplib, urllib
-import base64
-from xml.dom.minidom import parse, parseString
-
-__settings__ = xbmcaddon.Addon(id='plugin.program.switchking')
-__language__ = __settings__.getLocalizedString
+__addon__ = xbmcaddon.Addon(id='plugin.program.switchking')
+__localize__ = __addon__.getLocalizedString
+__setting__ = __addon__.getSetting
 
 MODE_DEVICE_LIST = "devicelist"
 MODE_SCENARIO_SELECT = "scenarioselect"
@@ -14,149 +13,11 @@ MODE_DEVICE_GROUP_LIST = "devicegrouplist"
 MODE_DEVICE_TOGGLE_SELECT = "devicetoggleselect"
 MODE_DEVICE_DIM_SELECT = "devicedimselect"
 
-class SwitchKing:
-
-	def __init__(self, host, port, user, password):
-		self.utils = Utils()
-		self.user = user
-		self.password = password
-		self.host = host
-		self.port = port
-		self.headers = {}
-		self.headers["Authorization"] = "Basic {0}".format(base64.b64encode("{0}:{1}".format(user, password)))
-		self.headers["Connection"] = "Keep-Alive"
-
-	def getServerResponse(self, url):
-		conn = httplib.HTTPConnection(self.host + ":" + self.port)
-		conn.request("GET", "/" + url, None, self.headers)
-		resp = conn.getresponse()
-		return resp.read()
-
-	def getDevices(self):
-		
-		dom = parseString(self.getServerResponse("devices"))
-		devices = dom.getElementsByTagName("RESTDevice")
-
-		result = []
-
-		for device in devices:
-			result.append({
-				"name": self.utils.unescape(device.getElementsByTagName("Name")[0].childNodes[0].data).encode('utf-8'),
-				"id": int(device.getElementsByTagName("ID")[0].childNodes[0].data),
-				"dim": (device.getElementsByTagName("SupportsAbsoluteDimLvl")[0].childNodes[0].data == "true"),
-				"state": int(device.getElementsByTagName("CurrentStateID")[0].childNodes[0].data)
-			})
-
-		return result
-
-	def getDeviceGroups(self):
-
-		dom = parseString(self.getServerResponse("devicegroups"))
-		devicegroups = dom.getElementsByTagName("RESTDeviceGroup")
-
-		result = []
-
-		for devicegroup in devicegroups:
-
-			if(devicegroup.getElementsByTagName("ID")[0].childNodes[0].data == "-1"):
-				continue
-
-			result.append({
-				"name": self.utils.unescape(devicegroup.getElementsByTagName("Name")[0].childNodes[0].data).encode('utf-8'),
-				"id": int(devicegroup.getElementsByTagName("ID")[0].childNodes[0].data)
-			})
-
-		return result
-
-
-	def getScenarios(self):
-
-		dom = parseString(self.getServerResponse("scenarios"))
-		scenarios = dom.getElementsByTagName("RESTScenario")
-
-		result = []
-
-		for scenario in scenarios:
-			result.append({
-				"name": self.utils.unescape(scenario.getElementsByTagName("Name")[0].childNodes[0].data).encode('utf-8'),
-				"id": int(scenario.getElementsByTagName("ID")[0].childNodes[0].data)
-			})
-
-		return result
-			
-	def getDataSources(self):
-
-		dom = parseString(getServerResponse("datasources"))
-		datasources = dom.getElementsByTagName("RESTDataSource")
-
-		for datasource in datasources:
-			result.append({
-				"name": self.utils.unescape(datasource.getElementsByTagName("Name")[0].childNodes[0].data).encode('utf-8'),
-				"id": int(datasource.getElementsByTagName("ID")[0].childNodes[0].data)
-			})
-
-		return result
-
-	def sendDeviceCommand(self, id, command):
-		conn = httplib.HTTPConnection(self.host + ":" + self.port)
-		conn.request("GET", "/devices/" + str(id) + "/" + command, None, self.headers)
-
-	def sendDeviceGroupCommand(self, id, command):
-		conn = httplib.HTTPConnection(self.host + ":" + self.port)
-		conn.request("GET", "/devicegroups/" + str(id) + "/" + command, None, self.headers)
-
-	def setScenario(self, id):
-		conn = httplib.HTTPConnection(self.host + ":" + self.port)
-		conn.request("GET", "/commandqueue?operation=changescenario&target=" + str(id) + "&param1=&param2=&param3=", None, self.headers)
-
-	def setDataSourceValue(self, id, value):
-		conn = httplib.HTTPConnection(self.host + ":" + self.port)
-		conn.request("GET", "/datasources/" + str(id) + "/addvalue?value=" + value, None, self.headers)
-
-class Utils:
-
-	def unescape(self, text):
-	    def fixup(m):
-	        text = m.group(0)
-	        if text[:2] == "&#":
-	            # character reference
-	            try:
-	                if text[:3] == "&#x":
-	                    return unichr(int(text[3:-1], 16))
-	                else:
-	                    return unichr(int(text[2:-1]))
-	            except ValueError:
-	                pass
-	        else:
-	            # named entity
-	            try:
-	                text = unichr(htmlentitydefs.name2codepoint[text[1:-1]])
-	            except KeyError:
-	                pass
-	        return text # leave as is
-	    return re.sub("&#?\w+;", fixup, text)
-
-
-	def paramStringToDictionary(self, str):
-
-		params = {}
-
-		if str:
-			pairs = str[1:].split("&")
-
-			for pair in pairs:
-				split = pair.split('=')
-
-				if (len(split)) == 2:
-					params[split[0]] = split[1]
-		
-		return params
-
 class XbmcSwitchking():
 
 	def __init__(self):
-		self.switchking = SwitchKing(__settings__.getSetting("host"), __settings__.getSetting("port"), __settings__.getSetting("username"), __settings__.getSetting("password"))
-		self.utils = Utils()
+		self.switchking = SwitchKing.SwitchKing(__setting__("host"), __setting__("port"), __setting__("username"), __setting__("password"))
+		self.utils = Utils.Utils()
 
 	def addDirectoryItem(self, name, params={}, isFolder=True, infoLabels=None):
 
@@ -194,14 +55,14 @@ class XbmcSwitchking():
 		for scenario in scenarios:
 			names.append(scenario["name"])
 
-		select = xbmcgui.Dialog().select(__language__(30030), names)
+		select = xbmcgui.Dialog().select(__localize__(30030), names)
 
 		self.switchking.setScenario(scenarios[select]["id"])
 
 		xbmcsk.getActionList()
 
 	def deviceToggle(self, id, name):
-		select = xbmcgui.Dialog().select(name, [__language__(30010), __language__(30011), __language__(30012)])
+		select = xbmcgui.Dialog().select(name, [__localize__(30010), __localize__(30011), __localize__(30012)])
 
 		if select == 0:
 			self.switchking.sendDeviceCommand(id, "turnon")
@@ -215,7 +76,7 @@ class XbmcSwitchking():
 		xbmcsk.getDeviceList()
 
 	def deviceDim(self, id, name):
-		select = xbmcgui.Dialog().select(name, [__language__(30010), __language__(30011), __language__(30050), __language__(30051), __language__(30052), __language__(30053), __language__(30054), __language__(30055), __language__(30056), __language__(30057), __language__(30058), __language__(30012)])
+		select = xbmcgui.Dialog().select(name, [__localize__(30010), __localize__(30011), __localize__(30050), __localize__(30051), __localize__(30052), __localize__(30053), __localize__(30054), __localize__(30055), __localize__(30056), __localize__(30057), __localize__(30058), __localize__(30012)])
 
 		if select == 0:
 			self.switchking.sendDeviceCommand(id, "turnon")
@@ -256,11 +117,11 @@ class XbmcSwitchking():
 		xbmcsk.getDeviceList()
 
 	def getActionList(self):
-		self.addDirectoryItem(__language__(30000), { "mode": MODE_DEVICE_LIST })
-		self.addDirectoryItem(__language__(30002), { "mode": MODE_SCENARIO_SELECT })
-		#self.addDirectoryItem(__language__(30001), { "mode": MODE_DEVICE_GROUP_LIST })
+		self.addDirectoryItem(__localize__(30000), { "mode": MODE_DEVICE_LIST })
+		self.addDirectoryItem(__localize__(30002), { "mode": MODE_SCENARIO_SELECT })
+		#self.addDirectoryItem(__localize__(30001), { "mode": MODE_DEVICE_GROUP_LIST })
 
-utils = Utils()	
+utils = Utils.Utils()	
 params = utils.paramStringToDictionary(sys.argv[2])
 xbmcsk = XbmcSwitchking()
 

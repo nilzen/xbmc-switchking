@@ -4,4 +4,10 @@
     <setting id="port" type="text" label="30501" default="8800" />
     <setting id="username" type="text" label="30502" />
     <setting id="password" type="text" label="30503" />
+
+    <setting type="sep" />
+
+    <setting id="event_enabled" type="bool" label="30510" />
+    <setting id="event_video_play" type="action" label="30511" action="RunScript($CWD/scenario_select.py, event_video_play)" enable="eq(-1,true)"/>
+    <setting id="event_video_stop" type="action" label="30512" action="RunScript($CWD/scenario_select.py, event_video_stop)" enable="eq(-2,true)"/>
 </settings>

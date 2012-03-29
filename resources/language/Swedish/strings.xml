@@ -24,4 +24,8 @@
 	<string id="30501">Port</string>
 	<string id="30502">Användarnamn</string>
 	<string id="30503">Lösenord</string>
+
+    <string id="30510">Filmscenarion</string>
+    <string id="30511">Video start</string>
+    <string id="30512">Video stop</string>
 </strings>
